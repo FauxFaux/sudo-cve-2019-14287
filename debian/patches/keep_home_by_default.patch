@@ -1,0 +1,16 @@
+Description: Set HOME in initial_keepenv_table
+ Set HOME in initial_keepenv_table; without this, $HOME will never be 
+ preserved unless added to keep_env.  There's appropriate logic to handle
+ resetting the home for -H and -i options, so this is the only part that's
+ missing.
+Author: Steve Langasek <steve.langasek@canonical.com>
+--- a/plugins/sudoers/env.c
++++ b/plugins/sudoers/env.c
+@@ -189,6 +189,7 @@
+     "COLORS",
+     "DISPLAY",
+     "DPKG_COLORS",
++    "HOME",
+     "HOSTNAME",
+     "KRB5CCNAME",
+     "LS_COLORS",

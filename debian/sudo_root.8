@@ -1,0 +1,138 @@
+.TH sudo_root 8 "February 8, 2006"
+
+.SH NAME
+sudo_root \- How to run administrative commands
+
+.SH SYNOPSIS
+
+.B sudo
+.I command
+
+.B sudo \-i
+
+.SH INTRODUCTION
+
+By default, the password for the user "root" (the system
+administrator) is locked. This means you cannot login as root or use
+su. Instead, the installer will set up sudo to allow the user that is
+created during install to run all administrative commands.
+
+This means that in the terminal you can use sudo for commands that
+require root privileges. All programs in the menu will use a graphical
+sudo to prompt for a password. When sudo asks for a password, it needs
+.B your password, 
+this means that a root password is not needed.
+
+To run a command which requires root privileges in a terminal, simply
+prepend 
+.B sudo
+in front of it. To get an interactive root shell, use
+.B sudo \-i\fR.
+
+.SH ALLOWING OTHER USERS TO RUN SUDO
+
+By default, only the user who installed the system is permitted to run
+sudo. To add more administrators, i. e. users who can run sudo, you
+have to add these users to the group 'sudo' by doing one of the
+following steps:
+
+.IP * 2
+In a shell, do
+
+.RS 4
+.B sudo adduser
+.I username
+.B sudo
+.RE
+
+.IP * 2
+Use the graphical "Users & Groups" program in the "System settings"
+menu to add the new user to the
+.B sudo
+group.
+
+.SH BENEFITS OF USING SUDO
+
+The benefits of leaving root disabled by default include the following:
+
+.IP * 2
+Users do not have to remember an extra password, which they are likely to forget.
+.IP * 2
+The installer is able to ask fewer questions.
+.IP * 2
+It avoids the "I can do anything" interactive login by default \- you
+will be prompted for a password before major changes can happen, which
+should make you think about the consequences of what you are doing.
+.IP * 2
+Sudo adds a log entry of the command(s) run (in \fB/var/log/auth.log\fR).
+.IP * 2
+Every attacker trying to brute\-force their way into your box will
+know it has an account named root and will try that first. What they
+do not know is what the usernames of your other users are.
+.IP * 2
+Allows easy transfer for admin rights, in a short term or long term
+period, by adding and removing users from the sudo group, while not
+compromising the root account.
+.IP * 2
+sudo can be set up with a much more fine\-grained security policy.
+.IP * 2
+On systems with more than one administrator using sudo avoids sharing
+a password amongst them.
+
+.SH DOWNSIDES OF USING SUDO
+
+Although for desktops the benefits of using sudo are great, there are
+possible issues which need to be noted:
+
+.IP * 2
+Redirecting the output of commands run with sudo can be confusing at
+first. For instance consider
+
+.RS 4
+.B sudo ls > /root/somefile
+.RE
+
+.RS 2
+will not work since it is the shell that tries to write to that file. You can use 
+.RE
+
+.RS 4
+.B ls | sudo tee /root/somefile
+.RE
+
+.RS 2
+to get the behaviour you want.
+.RE
+
+.IP * 2
+In a lot of office environments the ONLY local user on a system is
+root. All other users are imported using NSS techniques such as
+nss\-ldap. To setup a workstation, or fix it, in the case of a network
+failure where nss\-ldap is broken, root is required. This tends to
+leave the system unusable. An extra local user, or an enabled root
+password is needed here.
+
+.SH GOING BACK TO A TRADITIONAL ROOT ACCOUNT
+
+.B This is not recommended!
+
+To enable the root account (i.e. set a password) use:
+
+.RS 4
+.B sudo passwd root
+.RE
+
+Afterwards, edit the sudo configuration with
+.B sudo visudo
+and comment out the line
+
+.RS 4
+%sudo  ALL=(ALL) ALL
+.RE
+
+to disable sudo access to members of the sudo group.
+
+.SH SEE ALSO
+.BR sudo (8),
+.B https://wiki.ubuntu.com/RootSudo
+
